@@ -12,7 +12,7 @@
   --focus:#1a56db; --disabled-bg:#d9dfdb; --disabled-text:#3d4a42;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-padding-bottom:140px}
 body{margin:0;background:var(--bg);color:var(--text);
   font-family:system-ui,-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
   font-size:16px;line-height:1.6;overflow-wrap:anywhere}
@@ -75,6 +75,11 @@ button{font:inherit;cursor:pointer}
 .toggle{display:flex;align-items:center;gap:10px;min-height:48px;cursor:pointer;font-weight:700}
 .toggle input{width:22px;height:22px;margin:0;accent-color:var(--primary)}
 .empty{text-align:center;padding:20px 8px;background:var(--ok-bg);border-radius:10px;margin-top:8px}
+/* v2：完成檢查固定在底部 */
+.sticky-bar{position:sticky;bottom:0;z-index:2;background:var(--card);border-top:1px solid var(--line);
+  margin:16px -16px -16px;padding:10px 16px 12px;border-radius:0 0 12px 12px;box-shadow:0 -4px 12px rgba(0,0,0,.08)}
+.sticky-bar .status{margin:0 0 8px}
+.sticky-count{margin:0 0 6px;font-weight:700;text-align:center}
 dl.summary{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0 12px}
 dl.summary dt{color:var(--muted)}
 dl.summary dd{margin:0;font-weight:700}
@@ -142,10 +147,11 @@ footer{font-size:.95rem;color:var(--muted)}
       <strong>全部打包完成</strong>
       <p>沒有尚未打包的項目。按「完成檢查」產生結果，或取消上方「只看還沒打包的」查看全部。</p>
     </div>
-    <div style="margin-top:16px">
+    <div class="sticky-bar">
+      <div id="submit-status" role="status" aria-live="polite"></div>
+      <p class="sticky-count" id="sticky-count" aria-hidden="true"></p>
       <button type="button" class="btn" id="submit-btn">完成檢查</button>
     </div>
-    <div id="submit-status" role="status" aria-live="polite"></div>
   </section>
 
   <!-- 步驟 3：結果 -->
@@ -352,6 +358,7 @@ footer{font-size:.95rem;color:var(--muted)}
     var total = state.items.length;
     var packed = state.items.filter(function(it){ return state.checked[it.id]; }).length;
     els.progress.textContent = "已打包 " + packed + " / " + total + " 項";
+    document.getElementById("sticky-count").textContent = "已打包 " + packed + " / " + total + " 項";
     els.bar.style.width = (total ? Math.round(packed/total*100) : 0) + "%";
 
     var html = "", shown = 0;
